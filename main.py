@@ -1,5 +1,6 @@
 from random import randint
 
+# Global dictionary with the setup of the initial board
 BLANK_BOARD = {'v1': '   |   |   ',
                'h1': '___ ___ ___',
                'v2': '   |   |   ',
@@ -20,7 +21,7 @@ x_score = 0
 o_score = 0
 
 
-# TODO: print board
+# Function to print the board in it's current state
 def print_board(current_board):
     print('   A   B   C ')
     print(f'1 {current_board["v1"]}')
@@ -30,10 +31,7 @@ def print_board(current_board):
     print(f'3 {current_board["v3"]}')
 
 
-# TODO: keep score
-
-
-# TODO: decide who will go first
+# Function to randomly decide if X or O will start first
 def decide_first():
     first_player = 'X'
     if x_score == o_score:
@@ -49,6 +47,7 @@ def decide_first():
     return first_player
 
 
+# Function to change whose turn it is
 def flip_turn(previous_turn):
     if previous_turn == 'X':
         next_turn = 'O'
@@ -57,7 +56,7 @@ def flip_turn(previous_turn):
     return next_turn
 
 
-# TODO: ask for a move
+# Function to ask the current player to submit their move and check whether it is legal
 def ask_for_move(this_turn):
     move = input(f'Player {this_turn}, pick your next move: ').lower()
     while len(move) != 2 or move[0] not in ROW_CONVERSION.keys() or move[1] not in ['1', '2', '3'] \
@@ -67,7 +66,7 @@ def ask_for_move(this_turn):
     return move
 
 
-# TODO: place move on board
+# Function to transfer the chosen move to the current board
 def place_move(move, this_turn):
     row = 'v' + move[1]
     col = ROW_CONVERSION[move[0]]
@@ -75,7 +74,7 @@ def place_move(move, this_turn):
     played_turns.append(move)
 
 
-# TODO: check for win
+# Function to check all possibilities for a win
 def check_for_win():
     win_checks = {
         'row1': f'{board["v1"][1]}{board["v1"][5]}{board["v1"][9]}',
@@ -88,17 +87,18 @@ def check_for_win():
         'dia2': f'{board["v1"][9]}{board["v2"][5]}{board["v3"][1]}',
     }
     winner_after_turn = ''
+    # If there was a winner, check which player won
     for condition in win_checks.values():
         if condition == 'XXX' or condition == 'OOO':
             winner_after_turn = condition[0]
+    # If game is complete and no one has won, the game ends in a tie
     if len(played_turns) == 9 and winner_after_turn == '':
         winner_after_turn = 'tie'
     return winner_after_turn
 
 
-# TODO: repeat if no win
-
 if __name__ == '__main__':
+   # Initiate game
     print('TIC TAC TOE!\nFind a friend and decide who will be "X"s and who will be "O"s\nWhen prompted, type the '
           'location where you want to play in by the column first (letter) then row (number). E.g. "B3"\n')
     keep_playing = 'y'
@@ -107,6 +107,7 @@ if __name__ == '__main__':
         winner = ''
         turn = decide_first()
         played_turns = []
+        # Copy the blank board to a new variable to be able to track the game
         board = BLANK_BOARD.copy()
         while winner == '':
             print_board(board)
@@ -115,6 +116,7 @@ if __name__ == '__main__':
             winner = check_for_win()
             if winner != '':
                 print_board(board)
+                # If either player won, declare it and change the score
                 if winner == 'X':
                     x_score += 1
                     print(f'Game over! {winner} wins!')
@@ -125,8 +127,9 @@ if __name__ == '__main__':
                     print(f'Tie game! No winner this round :(')
                 print(f'Current score: X-{x_score}, O-{o_score}')
             else:
+                # If neither player won this round, change whose turn it is and repeat
                 turn = flip_turn(turn)
         keep_playing = input('Would you like to play again? (Y/N): ').lower()
-
+        # Error handling for incorrect input
         while keep_playing != 'y' and keep_playing != 'n':
             keep_playing = input('Please type either "Y" to play again or "N" to stop playing: ').lower()
